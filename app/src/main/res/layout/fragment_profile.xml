@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="@color/primary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="24dp">
+
+                <!-- ↓ id added so ProfileFragment can load image into it -->
+                <ImageView
+                    android:id="@+id/ivDoctorPhoto"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:src="@drawable/ic_person"
+                    android:background="@drawable/circle_bg"
+                    android:scaleType="centerCrop"
+                    android:clipToOutline="true"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView
+                    android:id="@+id/tvDoctorName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dr. Name"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"/>
+
+                <TextView
+                    android:id="@+id/tvToken"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CS-0000"
+                    android:textSize="13sp"
+                    android:textColor="#CCffffff"
+                    android:fontFamily="monospace"
+                    android:layout_marginTop="4dp"/>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Professional details card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/card_bg">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Professional Details"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Specialization row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Specialization"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tvSpecializationValue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:background="@drawable/field_bg"
+                        android:padding="10dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"/>
+                </LinearLayout>
+
+                <!-- Department row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Department"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tvDepartmentValue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:background="@drawable/field_bg"
+                        android:padding="10dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"/>
+                </LinearLayout>
+
+                <!-- Experience row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Experience"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tvExperienceValue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:background="@drawable/field_bg"
+                        android:padding="10dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"/>
+                </LinearLayout>
+
+                <!-- Qualification row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Qualification"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tvQualificationValue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:background="@drawable/field_bg"
+                        android:padding="10dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"/>
+                </LinearLayout>
+
+                <!-- Hospital row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Hospital"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tvHospitalValue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:background="@drawable/field_bg"
+                        android:padding="10dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"/>
+                </LinearLayout>
+
+                <!-- Phone row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Phone"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tvPhoneValue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:background="@drawable/field_bg"
+                        android:padding="10dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"/>
+                </LinearLayout>
+
+                <!-- Bio row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="top"
+                    android:layout_marginBottom="4dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Bio"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold"
+                        android:layout_marginTop="10dp"/>
+                    <TextView
+                        android:id="@+id/tvBioValue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:background="@drawable/field_bg"
+                        android:padding="10dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"
+                        android:minLines="3"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Edit profile button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditProfile"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Edit Profile"
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp"
+            app:cornerRadius="12dp"
+            app:icon="@android:drawable/ic_menu_edit"/>
+
+        <!-- Logout button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Logout"
+            android:textSize="16sp"
+            android:layout_marginBottom="24dp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@color/red"/>
+
+    </LinearLayout>
+</ScrollView>
