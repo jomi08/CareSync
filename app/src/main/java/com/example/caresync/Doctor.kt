@@ -9,7 +9,14 @@ data class Doctor(
     val id: Int = 0,
     val name: String,
     val password: String,
-    // CS-XXXX format token generated at registration
-    // stored here so we can look up by token at login
-    val token: String
+    val token: String,
+    val specialization: String = "",
+    val department: String = "",
+    val experience: String = "",
+    val qualification: String = "",
+    val hospital: String = "",
+    val phone: String = "",
+    val bio: String = "",
+    val profileImagePath: String = ""
+    // ↑ NEW — stores URI of chosen profile photo
 )

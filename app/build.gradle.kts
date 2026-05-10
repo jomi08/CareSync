@@ -7,9 +7,7 @@ android {
     namespace = "com.example.caresync"
     compileSdk = 36
 
-    buildFeatures {
-        viewBinding = true
-    }
+
 
     defaultConfig {
         applicationId = "com.example.caresync"
@@ -30,6 +28,9 @@ android {
             )
         }
     }
+    buildFeatures {
+        viewBinding = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -46,6 +47,16 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.nav.fragment)
+    implementation(libs.androidx.nav.ui)
+
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // Retrofit + Gson
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.gson)
+
 
     // Lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")

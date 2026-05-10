@@ -1,10 +1,9 @@
 package adapter
 
-
-
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -38,8 +37,18 @@ class PatientAdapter(
             }
 
             binding.root.setOnClickListener { onPatientClick(patient) }
+
+            // ── Long press → confirmation dialog before deleting ──────────────
             binding.root.setOnLongClickListener {
-                onDeleteClick(patient)
+                AlertDialog.Builder(binding.root.context)
+                    .setTitle("Delete Patient")
+                    .setMessage("Are you sure you want to remove ${patient.name}?")
+                    .setIcon(R.drawable.ic_person)
+                    .setPositiveButton("Delete") { _, _ ->
+                        onDeleteClick(patient)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
                 true
             }
         }

@@ -12,10 +12,21 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        // always force login on every app open
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            checkLoginStatus()
         }, 2000)
+    }
+
+    private fun checkLoginStatus() {
+        val prefs = getSharedPreferences("caresync_prefs", MODE_PRIVATE)
+        val isLoggedIn = prefs.getBoolean("is_logged_in", false)
+
+        if (isLoggedIn) {
+            startActivity(Intent(this, MainActivity::class.java))
+            // ↑ NOT DashboardActivity — must be MainActivity
+        } else {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+        finish()
     }
 }

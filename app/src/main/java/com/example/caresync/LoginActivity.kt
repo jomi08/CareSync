@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -16,7 +15,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var db: CareSyncDatabase
 
-    // tracks which panel is showing
     private var isLoginMode = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +24,6 @@ class LoginActivity : AppCompatActivity() {
 
         db = CareSyncDatabase.getDatabase(this)
 
-        // toggle between login and register
         binding.tvToggleLogin.setOnClickListener { switchToLogin() }
         binding.tvToggleRegister.setOnClickListener { switchToRegister() }
 
@@ -40,7 +37,6 @@ class LoginActivity : AppCompatActivity() {
         isLoginMode = true
         binding.layoutLogin.visibility = View.VISIBLE
         binding.layoutRegister.visibility = View.GONE
-        // active tab styling
         binding.tvToggleLogin.setBackgroundResource(R.color.primary)
         binding.tvToggleLogin.setTextColor(getColor(R.color.white))
         binding.tvToggleRegister.setBackgroundResource(R.color.background)
@@ -51,7 +47,6 @@ class LoginActivity : AppCompatActivity() {
         isLoginMode = false
         binding.layoutLogin.visibility = View.GONE
         binding.layoutRegister.visibility = View.VISIBLE
-        // active tab styling
         binding.tvToggleRegister.setBackgroundResource(R.color.primary)
         binding.tvToggleRegister.setTextColor(getColor(R.color.white))
         binding.tvToggleLogin.setBackgroundResource(R.color.background)
@@ -61,7 +56,7 @@ class LoginActivity : AppCompatActivity() {
     // ─── Login ────────────────────────────────────────────────────────────────
 
     private fun attemptLogin() {
-        val token = binding.etToken.text.toString().trim().uppercase()
+        val token    = binding.etToken.text.toString().trim().uppercase()
         val password = binding.etLoginPassword.text.toString().trim()
 
         if (token.isEmpty()) {
@@ -73,7 +68,6 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // clear errors
         binding.tilToken.error = null
         binding.tilLoginPassword.error = null
 
@@ -83,17 +77,15 @@ class LoginActivity : AppCompatActivity() {
             runOnUiThread {
                 when {
                     doctor == null -> {
-                        // token not found in DB
                         binding.tilToken.error = "Token not found. Please register first."
                     }
                     doctor.password != password -> {
-                        // token found but password wrong
                         binding.tilLoginPassword.error = "Incorrect password"
                     }
                     else -> {
-                        // ✅ success — save to SharedPreferences for session
+                        // save session then check if profile needs filling
                         saveSession(doctor)
-                        navigateToDashboard()
+                        checkAndPromptProfile(doctor)
                     }
                 }
             }
@@ -107,7 +99,6 @@ class LoginActivity : AppCompatActivity() {
         val password = binding.etRegPassword.text.toString().trim()
         val confirm  = binding.etRegConfirm.text.toString().trim()
 
-        // validation
         if (name.isEmpty()) {
             binding.tilRegName.error = "Enter your name"
             return
@@ -125,13 +116,11 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // clear errors
         binding.tilRegName.error = null
         binding.tilRegPassword.error = null
         binding.tilRegConfirm.error = null
 
         lifecycleScope.launch {
-            // generate a unique CS-XXXX token
             val token = generateUniqueToken()
 
             val doctor = Doctor(
@@ -143,7 +132,6 @@ class LoginActivity : AppCompatActivity() {
             db.doctorDao().insertDoctor(doctor)
 
             runOnUiThread {
-                // show the token in a dialog — user MUST note it down
                 showTokenDialog(name, token)
             }
         }
@@ -152,14 +140,12 @@ class LoginActivity : AppCompatActivity() {
     // ─── Token generation ─────────────────────────────────────────────────────
 
     private suspend fun generateUniqueToken(): String {
-        // keep generating until we get one that doesn't exist
         while (true) {
             val number = (1000..9999).random()
-            val token = "CS-$number"
+            val token  = "CS-$number"
             if (db.doctorDao().checkTokenExists(token) == null) {
-                return token  // unique — safe to use
+                return token
             }
-            // if it exists, loop runs again with a new number
         }
     }
 
@@ -177,9 +163,8 @@ class LoginActivity : AppCompatActivity() {
                         "You will need it every time you log in. " +
                         "It cannot be recovered if lost."
             )
-            .setCancelable(false) // force them to tap OK
+            .setCancelable(false)
             .setPositiveButton("I've saved it — Login now") { _, _ ->
-                // auto-fill the token in login form
                 switchToLogin()
                 binding.etToken.setText(token)
                 binding.etLoginPassword.requestFocus()
@@ -187,13 +172,52 @@ class LoginActivity : AppCompatActivity() {
             .show()
     }
 
+    // ─── Profile prompt on first login ────────────────────────────────────────
+
+    private fun checkAndPromptProfile(doctor: Doctor) {
+        // if all key profile fields are empty = first time login
+        // show a friendly dialog asking to fill profile
+        val isProfileEmpty = doctor.specialization.isEmpty() &&
+                doctor.department.isEmpty() &&
+                doctor.hospital.isEmpty()
+
+        if (isProfileEmpty) {
+            AlertDialog.Builder(this)
+                .setTitle("Complete Your Profile 👨‍⚕️")
+                .setMessage(
+                    "Welcome, Dr. ${doctor.name}!\n\n" +
+                            "Would you like to fill in your profile details?\n" +
+                            "(Specialization, Department, Hospital etc.)\n\n" +
+                            "You can always update this later from the Profile tab."
+                )
+                .setCancelable(false)
+                .setPositiveButton("Fill Now") { _, _ ->
+                    // go directly to EditProfileActivity
+                    val intent = Intent(this, EditProfileActivity::class.java)
+                    intent.putExtra("doctor_id", doctor.id)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+                .setNegativeButton("Later") { _, _ ->
+                    // skip profile, go straight to main app
+                    navigateToDashboard()
+                }
+                .show()
+        } else {
+            // profile already filled — go straight to dashboard
+            navigateToDashboard()
+        }
+    }
+
     // ─── Session ──────────────────────────────────────────────────────────────
 
     private fun saveSession(doctor: Doctor) {
-        // save token + name to SharedPreferences
-        // DashboardActivity reads these to show the greeting
         getSharedPreferences("caresync_prefs", MODE_PRIVATE)
             .edit()
+            .putBoolean("is_logged_in", true)
+            // splash screen reads this to skip login next time
             .putString("logged_in_token", doctor.token)
             .putString("logged_in_name", doctor.name)
             .putInt("logged_in_id", doctor.id)
@@ -201,7 +225,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToDashboard() {
-        startActivity(Intent(this, DashboardActivity::class.java))
-        finish() // remove LoginActivity from back stack
+        // goes to MainActivity which hosts bottom nav + all fragments
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TASK
+        // clears back stack so back button exits app
+        // instead of returning to login screen
+        startActivity(intent)
+        finish()
     }
 }
