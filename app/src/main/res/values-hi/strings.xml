@@ -1,0 +1,73 @@
+<resources>
+    <string name="app_name">CareSync</string>
+    <string name="app_tagline">डॉक्टरों के लिए रोगी प्रबंधन</string>
+
+    <!-- Login / Register -->
+    <string name="login">लॉगिन</string>
+    <string name="register">पंजीकरण</string>
+    <string name="enter_token_hint">लॉगिन के लिए अपना टोकन ID दर्ज करें</string>
+    <string name="token_id_hint">टोकन ID (जैसे CS-4821)</string>
+    <string name="password">पासवर्ड</string>
+    <string name="create_password">पासवर्ड बनाएं</string>
+    <string name="confirm_password">पासवर्ड की पुष्टि करें</string>
+    <string name="create_account">अपना डॉक्टर खाता बनाएं</string>
+    <string name="full_name">पूरा नाम</string>
+
+    <!-- Patients -->
+    <string name="all_patients">सभी मरीज़</string>
+    <string name="no_patients">अभी तक कोई मरीज़ नहीं जोड़ा गया</string>
+    <string name="search_patients">मरीज़ खोजें…</string>
+    <string name="chip_all">सभी</string>
+    <string name="chip_children">बच्चे (0-12)</string>
+    <string name="chip_adults">वयस्क (13-59)</string>
+    <string name="chip_senior">वरिष्ठ (60+)</string>
+    <string name="add_new_patient">नया मरीज़ जोड़ें</string>
+    <string name="fill_patient_details">नीचे मरीज़ की जानकारी भरें</string>
+    <string name="pick_photo">फ़ोटो चुनें</string>
+    <string name="take_photo">फ़ोटो लें</string>
+    <string name="age">आयु</string>
+    <string name="gender">लिंग</string>
+    <string name="blood_group">रक्त समूह</string>
+    <string name="phone_number">फ़ोन नंबर</string>
+    <string name="diagnosis">निदान</string>
+    <string name="medications">दवाइयां (अल्पविराम से अलग करें)</string>
+    <string name="save_patient">मरीज़ सहेजें</string>
+    <string name="health_tips">स्वास्थ्य सुझाव</string>
+    <string name="refresh">ताज़ा करें</string>
+    <string name="could_not_load_tips">सुझाव लोड नहीं हो सके</string>
+
+    <!-- Appointments -->
+    <string name="appointments">अपॉइंटमेंट</string>
+    <string name="no_appointments">अभी तक कोई अपॉइंटमेंट नहीं।\n+ दबाएं!</string>
+    <string name="chip_upcoming">आगामी</string>
+    <string name="chip_completed">पूर्ण</string>
+    <string name="chip_cancelled">रद्द</string>
+    <string name="new_appointment">नई अपॉइंटमेंट</string>
+    <string name="fill_details_below">नीचे विवरण भरें</string>
+    <string name="select_patient">मरीज़ चुनें</string>
+    <string name="pick_date">📅 तारीख चुनें</string>
+    <string name="pick_time">🕐 समय चुनें</string>
+    <string name="reason_for_visit">मुलाकात का कारण</string>
+    <string name="save_appointment">अपॉइंटमेंट सहेजें</string>
+
+    <!-- Profile -->
+    <string name="professional_details">व्यावसायिक विवरण</string>
+    <string name="specialization">विशेषज्ञता</string>
+    <string name="department">विभाग</string>
+    <string name="experience">अनुभव</string>
+    <string name="qualification">योग्यता</string>
+    <string name="hospital">अस्पताल</string>
+    <string name="phone">फ़ोन</string>
+    <string name="bio">परिचय</string>
+    <string name="edit_profile">प्रोफ़ाइल संपादित करें</string>
+    <string name="logout">लॉगआउट</string>
+    <string name="all_fields_optional">सभी फ़ील्ड वैकल्पिक हैं</string>
+    <string name="gallery">गैलरी</string>
+    <string name="camera">कैमरा</string>
+    <string name="save_profile">प्रोफ़ाइल सहेजें</string>
+    <string name="experience_hint">अनुभव (जैसे 5 वर्ष)</string>
+    <string name="qualification_hint">योग्यता (जैसे MBBS, MD)</string>
+    <string name="hospital_hint">अस्पताल / क्लिनिक का नाम</string>
+    <string name="contact_phone">संपर्क फ़ोन</string>
+    <string name="short_bio">संक्षिप्त परिचय</string>
+</resources>

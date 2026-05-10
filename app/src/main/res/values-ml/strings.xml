@@ -1,0 +1,73 @@
+<resources>
+    <string name="app_name">CareSync</string>
+    <string name="app_tagline">ഡോക്ടർമാർക്കുള്ള രോഗി മാനേജ്മെന്റ്</string>
+
+    <!-- Login / Register -->
+    <string name="login">ലോഗിൻ</string>
+    <string name="register">രജിസ്റ്റർ</string>
+    <string name="enter_token_hint">ലോഗിൻ ചെയ്യാൻ ടോക്കൺ ID നൽകുക</string>
+    <string name="token_id_hint">ടോക്കൺ ID (ഉദാ: CS-4821)</string>
+    <string name="password">പാസ്‌വേഡ്</string>
+    <string name="create_password">പാസ്‌വേഡ് ഉണ്ടാക്കുക</string>
+    <string name="confirm_password">പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക</string>
+    <string name="create_account">ഡോക്ടർ അക്കൗണ്ട് ഉണ്ടാക്കുക</string>
+    <string name="full_name">പൂർണ്ണ നാമം</string>
+
+    <!-- Patients -->
+    <string name="all_patients">എല്ലാ രോഗികളും</string>
+    <string name="no_patients">ഇതുവരെ രോഗികളെ ചേർത്തിട്ടില്ല</string>
+    <string name="search_patients">രോഗികളെ തിരയുക…</string>
+    <string name="chip_all">എല്ലാം</string>
+    <string name="chip_children">കുട്ടികൾ (0-12)</string>
+    <string name="chip_adults">മുതിർന്നവർ (13-59)</string>
+    <string name="chip_senior">മുതിർന്ന പൗരർ (60+)</string>
+    <string name="add_new_patient">പുതിയ രോഗിയെ ചേർക്കുക</string>
+    <string name="fill_patient_details">രോഗിയുടെ വിവരങ്ങൾ ചുവടെ നൽകുക</string>
+    <string name="pick_photo">ഫോട്ടോ തിരഞ്ഞെടുക്കുക</string>
+    <string name="take_photo">ഫോട്ടോ എടുക്കുക</string>
+    <string name="age">പ്രായം</string>
+    <string name="gender">ലിംഗം</string>
+    <string name="blood_group">രക്ത ഗ്രൂപ്പ്</string>
+    <string name="phone_number">ഫോൺ നമ്പർ</string>
+    <string name="diagnosis">രോഗനിർണ്ണയം</string>
+    <string name="medications">മരുന്നുകൾ (കോമയാൽ വേർതിരിക്കുക)</string>
+    <string name="save_patient">രോഗിയെ സേവ് ചെയ്യുക</string>
+    <string name="health_tips">ആരോഗ്യ നുറുങ്ങുകൾ</string>
+    <string name="refresh">പുതുക്കുക</string>
+    <string name="could_not_load_tips">നുറുങ്ങുകൾ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല</string>
+
+    <!-- Appointments -->
+    <string name="appointments">അപ്പോയിന്റ്മെന്റുകൾ</string>
+    <string name="no_appointments">ഇതുവരെ അപ്പോയിന്റ്മെന്റില്ല.\n+ അമർത്തുക!</string>
+    <string name="chip_upcoming">വരാനിരിക്കുന്നത്</string>
+    <string name="chip_completed">പൂർത്തിയായത്</string>
+    <string name="chip_cancelled">റദ്ദാക്കിയത്</string>
+    <string name="new_appointment">പുതിയ അപ്പോയിന്റ്മെന്റ്</string>
+    <string name="fill_details_below">ചുവടെ വിവരങ്ങൾ നൽകുക</string>
+    <string name="select_patient">രോഗിയെ തിരഞ്ഞെടുക്കുക</string>
+    <string name="pick_date">📅 തീയതി തിരഞ്ഞെടുക്കുക</string>
+    <string name="pick_time">🕐 സമയം തിരഞ്ഞെടുക്കുക</string>
+    <string name="reason_for_visit">സന്ദർശന കാരണം</string>
+    <string name="save_appointment">അപ്പോയിന്റ്മെന്റ് സേവ് ചെയ്യുക</string>
+
+    <!-- Profile -->
+    <string name="professional_details">പ്രൊഫഷണൽ വിവരങ്ങൾ</string>
+    <string name="specialization">സ്പെഷ്യലൈസേഷൻ</string>
+    <string name="department">വിഭാഗം</string>
+    <string name="experience">അനുഭവം</string>
+    <string name="qualification">യോഗ്യത</string>
+    <string name="hospital">ആശുപത്രി</string>
+    <string name="phone">ഫോൺ</string>
+    <string name="bio">പരിചയം</string>
+    <string name="edit_profile">പ്രൊഫൈൽ എഡിറ്റ് ചെയ്യുക</string>
+    <string name="logout">ലോഗൗട്ട്</string>
+    <string name="all_fields_optional">എല്ലാ ഫീൽഡുകളും ഓപ്ഷണൽ ആണ്</string>
+    <string name="gallery">ഗ്യാലറി</string>
+    <string name="camera">ക്യാമറ</string>
+    <string name="save_profile">പ്രൊഫൈൽ സേവ് ചെയ്യുക</string>
+    <string name="experience_hint">അനുഭവം (ഉദാ: 5 വർഷം)</string>
+    <string name="qualification_hint">യോഗ്യത (ഉദാ: MBBS, MD)</string>
+    <string name="hospital_hint">ആശുപത്രി / ക്ലിനിക്ക് പേര്</string>
+    <string name="contact_phone">കോൺടാക്റ്റ് ഫോൺ</string>
+    <string name="short_bio">ചുരുക്കിയ പരിചയം</string>
+</resources>
