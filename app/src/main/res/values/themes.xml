@@ -1,9 +1,15 @@
 <resources>
-    <style name="Theme.CareSync" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <style name="Theme.CareSync" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!--                                   ↑
+            changed from Light.DarkActionBar to DayNight.DarkActionBar
+            DayNight = automatically switches between light and dark
+            based on system or our manual toggle -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
     </style>
 
     <style name="Theme.CareSync.NoActionBar">
