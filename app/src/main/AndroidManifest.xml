@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"/>
@@ -8,8 +9,10 @@
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
-    <!-- ← ADD THIS: lets app query camera and file picker intents -->
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
@@ -27,7 +30,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CareSync"
         android:networkSecurityConfig="@xml/network_security_config">
-        <!-- ↑ ADD THIS: fixes SSL on real devices -->
 
         <activity
             android:name=".SplashActivity"
@@ -78,6 +80,31 @@
             android:name=".WebViewActivity"
             android:exported="false"
             android:theme="@style/Theme.CareSync.NoActionBar"/>
+
+        <activity
+            android:name=".OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CareSync.NoActionBar"/>
+
+        <activity
+            android:name=".AddVisitActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CareSync.NoActionBar"/>
+
+        <activity
+            android:name=".QRActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CareSync.NoActionBar"/>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+        </provider>
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -21,6 +21,13 @@ interface PatientDao {
     @Query("SELECT * FROM patients WHERE id = :id")
     suspend fun getPatientById(id: Int): Patient
 
+    @Query("SELECT COUNT(*) FROM patients")
+    suspend fun getPatientCount(): Int
+
+    // ── used to check if a patientCode already exists ─────────────────────
+    @Query("SELECT * FROM patients WHERE patientCode = :code LIMIT 1")
+    suspend fun getPatientByCode(code: String): Patient?
+
     @Query("""
         SELECT * FROM patients 
         WHERE doctorId = :doctorId
@@ -28,12 +35,12 @@ interface PatientDao {
             LOWER(name) LIKE '%' || LOWER(:query) || '%'
             OR LOWER(diagnosis) LIKE '%' || LOWER(:query) || '%'
             OR phone LIKE '%' || :query || '%'
+            OR patientCode LIKE '%' || :query || '%'
         )
         ORDER BY name ASC
     """)
     fun searchPatients(doctorId: Int, query: String): LiveData<List<Patient>>
 
-    // ✅ NEW — filter by age range, scoped to this doctor
     @Query("""
         SELECT * FROM patients
         WHERE doctorId = :doctorId

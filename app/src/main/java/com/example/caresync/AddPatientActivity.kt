@@ -1,12 +1,15 @@
 package com.example.caresync
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.speech.RecognizerIntent
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,14 +30,18 @@ class AddPatientActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddPatientBinding
     private lateinit var viewModel: PatientViewModel
+    private lateinit var db: CareSyncDatabase
     private var selectedImageUri: Uri? = null
     private var cameraImageUri: Uri? = null
-
-
     private var isEditMode = false
     private var existingPatient: Patient? = null
 
+    // tracks which field the mic is currently recording for
+    private var currentVoiceField: VoiceField = VoiceField.DIAGNOSIS
 
+    enum class VoiceField { DIAGNOSIS, MEDICATION }
+
+    // ── Image picker ──────────────────────────────────────────────────────────
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -44,7 +51,7 @@ class AddPatientActivity : AppCompatActivity() {
         }
     }
 
-
+    // ── Camera ────────────────────────────────────────────────────────────────
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -56,17 +63,46 @@ class AddPatientActivity : AppCompatActivity() {
         }
     }
 
+    // ── Voice input result ────────────────────────────────────────────────────
+    private val voiceLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val matches = result.data
+                ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            val spokenText = matches?.firstOrNull() ?: return@registerForActivityResult
 
+            // append to whichever field triggered the mic
+            when (currentVoiceField) {
+                VoiceField.DIAGNOSIS -> {
+                    val existing = binding.etDiagnosis.text.toString().trim()
+                    binding.etDiagnosis.setText(
+                        if (existing.isEmpty()) spokenText
+                        else "$existing, $spokenText"
+                    )
+                }
+                VoiceField.MEDICATION -> {
+                    val existing = binding.etMedication.text.toString().trim()
+                    binding.etMedication.setText(
+                        if (existing.isEmpty()) spokenText
+                        else "$existing, $spokenText"
+                    )
+                }
+            }
+        }
+    }
+
+    // ── Permission ────────────────────────────────────────────────────────────
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val cameraGranted = permissions[Manifest.permission.CAMERA] ?: false
+        val cameraGranted  = permissions[Manifest.permission.CAMERA] ?: false
         val storageGranted = permissions[Manifest.permission.READ_MEDIA_IMAGES]
             ?: permissions[Manifest.permission.READ_EXTERNAL_STORAGE]
             ?: false
-        // User will tap the button again after granting
         if (!cameraGranted && !storageGranted) {
-            Toast.makeText(this, "Permissions needed for photos", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Permissions needed for photos",
+                Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -77,6 +113,7 @@ class AddPatientActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         viewModel = ViewModelProvider(this)[PatientViewModel::class.java]
+        db = CareSyncDatabase.getDatabase(this)
 
         setupDropdowns()
         checkEditMode()
@@ -84,8 +121,40 @@ class AddPatientActivity : AppCompatActivity() {
         binding.btnPickImage.setOnClickListener { checkStorageAndOpenGallery() }
         binding.btnTakePhoto.setOnClickListener { checkCameraAndOpen() }
         binding.btnSave.setOnClickListener { saveOrUpdatePatient() }
+
+        // ── Mic buttons ───────────────────────────────────────────────────────
+        binding.fabMicDiagnosis.setOnClickListener {
+            currentVoiceField = VoiceField.DIAGNOSIS
+            startVoiceInput("Speak the diagnosis")
+        }
+
+        binding.fabMicMedication.setOnClickListener {
+            currentVoiceField = VoiceField.MEDICATION
+            startVoiceInput("Speak the medication")
+        }
     }
 
+    // ── Voice input launcher ──────────────────────────────────────────────────
+
+    private fun startVoiceInput(prompt: String) {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            putExtra(RecognizerIntent.EXTRA_PROMPT, prompt)
+        }
+
+        // check if speech recognition is available
+        if (intent.resolveActivity(packageManager) != null) {
+            voiceLauncher.launch(intent)
+        } else {
+            Toast.makeText(this,
+                "Speech recognition not available on this device",
+                Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // ── Edit mode ─────────────────────────────────────────────────────────────
 
     private fun checkEditMode() {
         val patientId = intent.getIntExtra("patient_id", -1)
@@ -95,10 +164,9 @@ class AddPatientActivity : AppCompatActivity() {
             binding.btnSave.text = "Update Patient"
 
             lifecycleScope.launch {
-                val db = CareSyncDatabase.getDatabase(applicationContext)
                 val patient = db.patientDao().getPatientById(patientId)
                 existingPatient = patient
-                populateFields(patient)
+                runOnUiThread { populateFields(patient) }
             }
         } else {
             supportActionBar?.title = "Add Patient"
@@ -113,6 +181,7 @@ class AddPatientActivity : AppCompatActivity() {
         binding.etPhone.setText(patient.phone)
         binding.etDiagnosis.setText(patient.diagnosis)
         binding.etMedication.setText(patient.medication)
+
         if (patient.imagePath.isNotEmpty()) {
             selectedImageUri = Uri.parse(patient.imagePath)
             Glide.with(this)
@@ -122,6 +191,8 @@ class AddPatientActivity : AppCompatActivity() {
                 .into(binding.ivPatientPhoto)
         }
     }
+
+    // ── Dropdowns ─────────────────────────────────────────────────────────────
 
     private fun setupDropdowns() {
         val genders = listOf("Male", "Female", "Other")
@@ -134,6 +205,7 @@ class AddPatientActivity : AppCompatActivity() {
         )
     }
 
+    // ── Gallery ───────────────────────────────────────────────────────────────
 
     private fun checkStorageAndOpenGallery() {
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -141,13 +213,15 @@ class AddPatientActivity : AppCompatActivity() {
         else
             Manifest.permission.READ_EXTERNAL_STORAGE
 
-        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, permission)
+            == PackageManager.PERMISSION_GRANTED) {
             imagePickerLauncher.launch("image/*")
         } else {
             permissionLauncher.launch(arrayOf(permission))
         }
     }
 
+    // ── Camera ────────────────────────────────────────────────────────────────
 
     private fun checkCameraAndOpen() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -160,7 +234,8 @@ class AddPatientActivity : AppCompatActivity() {
 
     private fun openCamera() {
         val photoFile = createImageFile() ?: run {
-            Toast.makeText(this, "Could not create image file", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Could not create image file",
+                Toast.LENGTH_SHORT).show()
             return
         }
         cameraImageUri = FileProvider.getUriForFile(
@@ -168,7 +243,7 @@ class AddPatientActivity : AppCompatActivity() {
             "${applicationContext.packageName}.fileprovider",
             photoFile
         )
-        val intent = android.content.Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
             putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri)
         }
         if (intent.resolveActivity(packageManager) != null) {
@@ -179,7 +254,8 @@ class AddPatientActivity : AppCompatActivity() {
     }
 
     private fun createImageFile(): File? {
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val timestamp  = SimpleDateFormat("yyyyMMdd_HHmmss",
+            Locale.getDefault()).format(Date())
         val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return try {
             File.createTempFile("PATIENT_${timestamp}_", ".jpg", storageDir)
@@ -189,6 +265,19 @@ class AddPatientActivity : AppCompatActivity() {
         }
     }
 
+    // ── Generate patient code ─────────────────────────────────────────────────
+
+    private suspend fun generatePatientCode(): String {
+        var code: String
+        var count = db.patientDao().getPatientCount()
+        do {
+            count++
+            code = "PT-%03d".format(count)
+        } while (db.patientDao().getPatientByCode(code) != null)
+        return code
+    }
+
+    // ── Save or update ────────────────────────────────────────────────────────
 
     private fun saveOrUpdatePatient() {
         val name       = binding.etName.text.toString().trim()
@@ -199,47 +288,70 @@ class AddPatientActivity : AppCompatActivity() {
         val diagnosis  = binding.etDiagnosis.text.toString().trim()
         val medication = binding.etMedication.text.toString().trim()
 
+        if (name.isEmpty())       { binding.tilName.error = "Required"; return }
+        if (ageStr.isEmpty())     { binding.tilAge.error = "Required"; return }
+        if (gender.isEmpty())     { binding.tilGender.error = "Select gender"; return }
+        if (blood.isEmpty())      { binding.tilBlood.error = "Select blood group"; return }
+        if (phone.isEmpty())      { binding.tilPhone.error = "Required"; return }
+        if (diagnosis.isEmpty())  { binding.tilDiagnosis.error = "Required"; return }
+        if (medication.isEmpty()) { binding.tilMedication.error = "Required"; return }
 
-        if (name.isEmpty())      { binding.tilName.error = "Required"; return }
-        if (ageStr.isEmpty())    { binding.tilAge.error = "Required"; return }
-        if (gender.isEmpty())    { binding.tilGender.error = "Select gender"; return }
-        if (blood.isEmpty())     { binding.tilBlood.error = "Select blood group"; return }
-        if (phone.isEmpty())     { binding.tilPhone.error = "Required"; return }
-        if (diagnosis.isEmpty()) { binding.tilDiagnosis.error = "Required"; return }
-        if (medication.isEmpty()){ binding.tilMedication.error = "Required"; return }
+        binding.tilName.error       = null
+        binding.tilAge.error        = null
+        binding.tilGender.error     = null
+        binding.tilBlood.error      = null
+        binding.tilPhone.error      = null
+        binding.tilDiagnosis.error  = null
+        binding.tilMedication.error = null
 
         val imagePath = selectedImageUri?.toString() ?: ""
+        val prefs     = getSharedPreferences("caresync_prefs", MODE_PRIVATE)
+        val doctorId  = prefs.getInt("logged_in_id", 0)
 
-        if (isEditMode && existingPatient != null) {
-
-            val updated = existingPatient!!.copy(
-                name       = name,
-                age        = ageStr.toInt(),
-                gender     = gender,
-                bloodGroup = blood,
-                phone      = phone,
-                diagnosis  = diagnosis,
-                medication = medication,
-                imagePath  = imagePath
-            )
-            viewModel.update(updated)
-            Toast.makeText(this, "$name updated!", Toast.LENGTH_SHORT).show()
-        } else {
-            val patient = Patient(
-                name       = name,
-                age        = ageStr.toInt(),
-                gender     = gender,
-                bloodGroup = blood,
-                phone      = phone,
-                diagnosis  = diagnosis,
-                medication = medication,
-                imagePath  = imagePath
-            )
-            viewModel.insert(patient)
-            Toast.makeText(this, "$name added successfully!", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            if (isEditMode && existingPatient != null) {
+                val updated = existingPatient!!.copy(
+                    name       = name,
+                    age        = ageStr.toInt(),
+                    gender     = gender,
+                    bloodGroup = blood,
+                    phone      = phone,
+                    diagnosis  = diagnosis,
+                    medication = medication,
+                    imagePath  = imagePath
+                )
+                viewModel.update(updated)
+                runOnUiThread {
+                    Toast.makeText(this@AddPatientActivity,
+                        "$name updated!", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            } else {
+                val code = generatePatientCode()
+                val patient = Patient(
+                    patientCode = code,
+                    name        = name,
+                    age         = ageStr.toInt(),
+                    gender      = gender,
+                    bloodGroup  = blood,
+                    phone       = phone,
+                    diagnosis   = diagnosis,
+                    medication  = medication,
+                    imagePath   = imagePath,
+                    doctorId    = doctorId
+                )
+                viewModel.insert(patient)
+                runOnUiThread {
+                    Toast.makeText(this@AddPatientActivity,
+                        "$name added! ID: $code", Toast.LENGTH_LONG).show()
+                    finish()
+                }
+            }
         }
-        finish()
     }
 
-    override fun onSupportNavigateUp(): Boolean { finish(); return true }
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
 }

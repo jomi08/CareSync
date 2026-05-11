@@ -1,5 +1,6 @@
 package com.example.caresync
 
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -13,8 +14,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        // MUST apply theme BEFORE super.onCreate and setContentView
-        // otherwise the theme flickers on launch
         applyThemeFromPrefs()
 
         super.onCreate(savedInstanceState)
@@ -26,25 +25,31 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         binding.bottomNav.setupWithNavController(navController)
+
+        // Create notification channel (safe to call every launch)
+        NotificationHelper.createNotificationChannel(this)
+
+        // Request POST_NOTIFICATIONS permission on Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    1001
+                )
+            }
+        }
     }
 
     private fun applyThemeFromPrefs() {
-        // read saved dark mode preference
         val prefs = getSharedPreferences("caresync_prefs", MODE_PRIVATE)
         val isDarkMode = prefs.getBoolean("dark_mode", false)
 
         if (isDarkMode) {
-            AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_YES
-            )
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
-            AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_NO
-            )
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
-        // this ensures the correct theme is applied
-        // every time the app is opened
-        // without this, app always starts in light mode
-        // even if user set dark mode last time
     }
 }

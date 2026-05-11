@@ -19,9 +19,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }  // ← added
     }
 }
 
 rootProject.name = "CareSync"
 include(":app")
- 

@@ -33,6 +33,9 @@ class PatientsFragment : Fragment() {
         patientAdapter.submitList(currentPatientList)
         binding.tvPatientCount.text = "${currentPatientList.size} patients registered"
 
+        // ↓ ADDED: stop spinner when fresh data arrives
+        binding.swipeRefresh.isRefreshing = false
+
         if (currentPatientList.isEmpty() && currentQuery.isNotEmpty()) {
             binding.tvEmpty.text = "No patients found for \"$currentQuery\""
             binding.tvEmpty.visibility = View.VISIBLE
@@ -76,6 +79,7 @@ class PatientsFragment : Fragment() {
         setupPatientRecyclerView()
         setupChips()
         setupSearch()
+        setupSwipeRefresh() // ↓ ADDED
         switchObserver(patientViewModel.allPatients)
 
         binding.fabAdd.setOnClickListener {
@@ -86,13 +90,40 @@ class PatientsFragment : Fragment() {
             sharePatientList()
         }
 
-        // ── Health Tips FAB → opens bottom sheet ──────────────────────────────
+        // unchanged — health tips bottom sheet
         binding.fabHealthTips.setOnClickListener {
             HealthTipsBottomSheet().show(parentFragmentManager, "HealthTipsBottomSheet")
         }
     }
 
-    // ── Patient RecyclerView ──────────────────────────────────────────────────
+    // ── ADDED: Swipe Refresh ──────────────────────────────────────────────────
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeColors(
+            requireContext().getColor(R.color.primary),
+            requireContext().getColor(R.color.accent)
+        )
+
+        binding.swipeRefresh.setOnRefreshListener {
+            // re-observe current LiveData to get fresh data from Room
+            val current = currentObservedLiveData
+            if (current != null) {
+                current.removeObserver(patientObserver)
+                current.observe(viewLifecycleOwner, patientObserver)
+            } else {
+                switchObserver(patientViewModel.allPatients)
+            }
+
+            // safety net — stop spinner after 3 seconds no matter what
+            binding.swipeRefresh.postDelayed({
+                if (_binding != null) {
+                    binding.swipeRefresh.isRefreshing = false
+                }
+            }, 3000)
+        }
+    }
+
+    // ── Patient RecyclerView — unchanged ─────────────────────────────────────
 
     private fun setupPatientRecyclerView() {
         patientAdapter = PatientAdapter(
@@ -113,7 +144,7 @@ class PatientsFragment : Fragment() {
         binding.recyclerPatients.adapter = patientAdapter
     }
 
-    // ── Chips ─────────────────────────────────────────────────────────────────
+    // ── Chips — unchanged ─────────────────────────────────────────────────────
 
     private fun setupChips() {
         binding.chipAll.setOnClickListener {
@@ -134,7 +165,7 @@ class PatientsFragment : Fragment() {
         }
     }
 
-    // ── Search ────────────────────────────────────────────────────────────────
+    // ── Search — unchanged ────────────────────────────────────────────────────
 
     private fun setupSearch() {
         binding.searchView.setOnQueryTextListener(
@@ -154,7 +185,7 @@ class PatientsFragment : Fragment() {
             })
     }
 
-    // ── Observer switching ────────────────────────────────────────────────────
+    // ── Observer switching — unchanged ────────────────────────────────────────
 
     private fun switchObserver(newLiveData: LiveData<List<Patient>>) {
         currentObservedLiveData?.removeObserver(patientObserver)
@@ -162,7 +193,7 @@ class PatientsFragment : Fragment() {
         newLiveData.observe(viewLifecycleOwner, patientObserver)
     }
 
-    // ── Empty state ───────────────────────────────────────────────────────────
+    // ── Empty state — unchanged ───────────────────────────────────────────────
 
     private fun updateEmptyState(isEmpty: Boolean) {
         if (isEmpty) {
@@ -177,7 +208,7 @@ class PatientsFragment : Fragment() {
         }
     }
 
-    // ── Share ─────────────────────────────────────────────────────────────────
+    // ── Share — unchanged ─────────────────────────────────────────────────────
 
     private fun sharePatientList() {
         if (currentPatientList.isEmpty()) return

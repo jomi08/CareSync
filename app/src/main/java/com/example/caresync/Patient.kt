@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class Patient(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val doctorId: Int = 0,        // ✅ NEW — links patient to a doctor
+    val patientCode: String = "",   // ← NEW e.g. "PT-001"
     val name: String,
     val age: Int,
     val gender: String,
@@ -15,5 +15,6 @@ data class Patient(
     val phone: String,
     val diagnosis: String,
     val medication: String,
-    val imagePath: String = ""
+    val imagePath: String = "",
+    val doctorId: Int = 0
 )

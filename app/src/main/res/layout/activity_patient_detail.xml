@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-
+        <!-- ── Header card ── -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,10 +53,48 @@
                     android:textSize="14sp"
                     android:textColor="#CCffffff"
                     android:layout_marginTop="4dp"/>
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- ── Patient ID badge ── -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="@color/accent">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🪪 Patient ID"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"/>
+
+                <TextView
+                    android:id="@+id/tvPatientCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PT-001"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:fontFamily="monospace"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ── Patient information card ── -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,7 +119,6 @@
                     android:textColor="@color/text_primary"
                     android:layout_marginBottom="12dp"/>
 
-
                 <TableLayout
                     android:id="@+id/tableInfo"
                     android:layout_width="match_parent"
@@ -88,30 +126,46 @@
                     android:stretchColumns="1">
 
                     <TableRow android:layout_marginBottom="8dp">
-                        <TextView android:text="📞 Phone" android:textColor="@color/text_secondary"
-                            android:textSize="14sp" android:paddingEnd="16dp"/>
-                        <TextView android:id="@+id/tvDetailPhone" android:textColor="@color/text_primary"
+                        <TextView
+                            android:text="📞 Phone"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:paddingEnd="16dp"/>
+                        <TextView
+                            android:id="@+id/tvDetailPhone"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"/>
                     </TableRow>
 
                     <TableRow android:layout_marginBottom="8dp">
-                        <TextView android:text="🩸 Blood" android:textColor="@color/text_secondary"
-                            android:textSize="14sp" android:paddingEnd="16dp"/>
-                        <TextView android:id="@+id/tvDetailBlood" android:textColor="@color/text_primary"
+                        <TextView
+                            android:text="🩸 Blood"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:paddingEnd="16dp"/>
+                        <TextView
+                            android:id="@+id/tvDetailBlood"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"/>
                     </TableRow>
 
                     <TableRow android:layout_marginBottom="8dp">
-                        <TextView android:text="🏥 Diagnosis" android:textColor="@color/text_secondary"
-                            android:textSize="14sp" android:paddingEnd="16dp"/>
-                        <TextView android:id="@+id/tvDetailDiagnosis" android:textColor="@color/text_primary"
+                        <TextView
+                            android:text="🏥 Diagnosis"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:paddingEnd="16dp"/>
+                        <TextView
+                            android:id="@+id/tvDetailDiagnosis"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"/>
                     </TableRow>
+
                 </TableLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Medication card with table -->
+        <!-- ── Medication card ── -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -142,21 +196,110 @@
                     android:layout_height="wrap_content"
                     android:stretchColumns="*">
 
-                    <!-- Header row -->
-                    <TableRow android:background="@color/primary"
-                        android:layout_marginBottom="4dp">
-                        <TextView android:text="  #  " android:textColor="@color/white"
-                            android:textStyle="bold" android:padding="8dp"/>
-                        <TextView android:text="Medication" android:textColor="@color/white"
-                            android:textStyle="bold" android:padding="8dp"/>
-                        <TextView android:text="Frequency" android:textColor="@color/white"
-                            android:textStyle="bold" android:padding="8dp"/>
+                    <TableRow android:background="@color/primary">
+                        <TextView
+                            android:text="  #  "
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:padding="8dp"/>
+                        <TextView
+                            android:text="Medication"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:padding="8dp"/>
+                        <TextView
+                            android:text="Frequency"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:padding="8dp"/>
                     </TableRow>
-                    <!-- Rows added dynamically in code below -->
                 </TableLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- ── Visit History card ── -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/card_bg">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Visit history header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🗂 Visit History"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAddVisit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="+ Add Visit"
+                        android:textSize="12sp"
+                        app:cornerRadius="8dp"/>
+
+                </LinearLayout>
+
+                <!-- Empty state -->
+                <TextView
+                    android:id="@+id/tvNoVisits"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No visit records yet.\nTap '+ Add Visit' to record one."
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary"
+                    android:gravity="center"
+                    android:paddingVertical="16dp"
+                    android:visibility="visible"/>
+
+                <!-- ── KEY FIX: RecyclerView outside CardView ── -->
+                <!-- nestedScrollingEnabled false + NestedScrollView parent -->
+                <!-- allows full expansion on all devices including phones -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerVisits"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"
+                    android:paddingBottom="8dp"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ── QR Code button — outside visit card ── -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnViewQr"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="🔲  View Patient QR Code"
+            android:textSize="16sp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@color/accent"/>
+
+        <!-- ── Edit button ── -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEdit"
             android:layout_width="match_parent"
@@ -168,6 +311,7 @@
             app:cornerRadius="12dp"
             app:backgroundTint="@color/primary"/>
 
+        <!-- ── Share button ── -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnShare"
             android:layout_width="match_parent"
@@ -180,4 +324,5 @@
             app:icon="@android:drawable/ic_menu_share"/>
 
     </LinearLayout>
-</ScrollView>
+
+</androidx.core.widget.NestedScrollView>

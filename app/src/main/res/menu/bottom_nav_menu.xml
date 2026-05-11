@@ -12,11 +12,15 @@
         android:title="Appointments"/>
 
     <item
+        android:id="@+id/analyticsFragment"
+        android:icon="@android:drawable/ic_menu_report_image"
+        android:title="Analytics"/>
+
+    <item
         android:id="@+id/profileFragment"
         android:icon="@android:drawable/ic_menu_myplaces"
         android:title="Profile"/>
 
-    <!-- NEW settings tab -->
     <item
         android:id="@+id/settingsFragment"
         android:icon="@android:drawable/ic_menu_preferences"

@@ -13,19 +13,31 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            checkLoginStatus()
+            checkWhereToGo()
         }, 2000)
     }
 
-    private fun checkLoginStatus() {
+    private fun checkWhereToGo() {
         val prefs = getSharedPreferences("caresync_prefs", MODE_PRIVATE)
-        val isLoggedIn = prefs.getBoolean("is_logged_in", false)
 
-        if (isLoggedIn) {
-            startActivity(Intent(this, MainActivity::class.java))
-            // ↑ NOT DashboardActivity — must be MainActivity
-        } else {
-            startActivity(Intent(this, LoginActivity::class.java))
+        val onboardingDone = prefs.getBoolean("onboarding_done", false)
+        val isLoggedIn     = prefs.getBoolean("is_logged_in", false)
+
+        when {
+            // first ever launch — show onboarding
+            !onboardingDone -> {
+                startActivity(Intent(this, OnboardingActivity::class.java))
+            }
+
+            // onboarding done + logged in → go straight to app
+            isLoggedIn -> {
+                startActivity(Intent(this, MainActivity::class.java))
+            }
+
+            // onboarding done but not logged in → go to login
+            else -> {
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
         }
         finish()
     }

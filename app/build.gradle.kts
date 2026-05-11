@@ -43,6 +43,14 @@ dependencies {
     implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
 
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
     // Room DB — now using updated versions from toml
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

@@ -6,9 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.example.caresync.databinding.ActivityAddAppointmentBinding
-import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class AddAppointmentActivity : AppCompatActivity() {
@@ -22,6 +20,9 @@ class AddAppointmentActivity : AppCompatActivity() {
     private var selectedPatientId = -1
     private var patientList: List<Patient> = emptyList()
 
+    // track whether we've already scheduled the reminder for this save
+    private var reminderScheduled = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddAppointmentBinding.inflate(layoutInflater)
@@ -33,7 +34,6 @@ class AddAppointmentActivity : AppCompatActivity() {
         appointmentViewModel = ViewModelProvider(this)[AppointmentViewModel::class.java]
         patientViewModel = ViewModelProvider(this)[PatientViewModel::class.java]
 
-        // observe patient list to populate dropdown
         patientViewModel.allPatients.observe(this) { patients ->
             patientList = patients
             val names = patients.map { it.name }
@@ -45,12 +45,10 @@ class AddAppointmentActivity : AppCompatActivity() {
             binding.actvPatient.setAdapter(adapter)
         }
 
-        // when patient is selected, save their ID
         binding.actvPatient.setOnItemClickListener { _, _, position, _ ->
             selectedPatientId = patientList[position].id
         }
 
-        // date picker
         binding.btnPickDate.setOnClickListener {
             val cal = Calendar.getInstance()
             DatePickerDialog(
@@ -65,7 +63,6 @@ class AddAppointmentActivity : AppCompatActivity() {
             ).show()
         }
 
-        // time picker
         binding.btnPickTime.setOnClickListener {
             val cal = Calendar.getInstance()
             TimePickerDialog(
@@ -125,7 +122,27 @@ class AddAppointmentActivity : AppCompatActivity() {
             status = "Upcoming"
         )
 
+        // Insert the appointment
         appointmentViewModel.insert(appointment)
+
+        // Watch allAppointments once to get the auto-generated ID
+        // then schedule the reminder and stop watching
+        reminderScheduled = false
+        appointmentViewModel.allAppointments.observe(this) { appointments ->
+            if (!reminderScheduled) {
+                val inserted = appointments.lastOrNull {
+                    it.patientName == patientName &&
+                            it.date == selectedDate &&
+                            it.time == selectedTime &&
+                            it.reason == reason
+                }
+                if (inserted != null) {
+                    reminderScheduled = true
+                    NotificationScheduler.scheduleReminder(this, inserted)
+                }
+            }
+        }
+
         Toast.makeText(this, "Appointment saved!", Toast.LENGTH_SHORT).show()
         finish()
     }

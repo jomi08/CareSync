@@ -8,8 +8,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [Patient::class, Appointment::class, Doctor::class],
-    version = 6,
+    entities = [Patient::class, Appointment::class, Doctor::class, Visit::class],
+    version = 7,                // ← bumped from 6 to 7
     exportSchema = false
 )
 abstract class CareSyncDatabase : RoomDatabase() {
@@ -17,6 +17,7 @@ abstract class CareSyncDatabase : RoomDatabase() {
     abstract fun patientDao(): PatientDao
     abstract fun appointmentDao(): AppointmentDao
     abstract fun doctorDao(): DoctorDao
+    abstract fun visitDao(): VisitDao      // ← new
 
     companion object {
         @Volatile
@@ -72,13 +73,9 @@ abstract class CareSyncDatabase : RoomDatabase() {
             }
         }
 
-        // ── NEW: fixes broken appointments table on devices
-        // that had an incomplete migration leave an empty table ──────────────
         val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // drop the broken empty table
                 database.execSQL("DROP TABLE IF EXISTS `appointments`")
-                // recreate it correctly with all required columns
                 database.execSQL("""
                     CREATE TABLE IF NOT EXISTS `appointments` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -89,6 +86,28 @@ abstract class CareSyncDatabase : RoomDatabase() {
                         `time` TEXT NOT NULL,
                         `reason` TEXT NOT NULL,
                         `status` TEXT NOT NULL
+                    )
+                """.trimIndent())
+            }
+        }
+
+        // ── NEW: adds patientCode to patients, creates visits table ──────────
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // add patientCode column to existing patients
+                database.execSQL(
+                    "ALTER TABLE patients ADD COLUMN patientCode TEXT NOT NULL DEFAULT ''"
+                )
+                // create visits table
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `visits` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `patientId` INTEGER NOT NULL,
+                        `date` TEXT NOT NULL,
+                        `diagnosis` TEXT NOT NULL,
+                        `prescription` TEXT NOT NULL,
+                        `notes` TEXT NOT NULL,
+                        `doctorId` INTEGER NOT NULL
                     )
                 """.trimIndent())
             }
@@ -106,7 +125,8 @@ abstract class CareSyncDatabase : RoomDatabase() {
                         MIGRATION_2_3,
                         MIGRATION_3_4,
                         MIGRATION_4_5,
-                        MIGRATION_5_6  // ← added
+                        MIGRATION_5_6,
+                        MIGRATION_6_7   // ← added
                     )
                     .build()
                 INSTANCE = instance

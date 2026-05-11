@@ -16,11 +16,15 @@
         android:label="Appointments"/>
 
     <fragment
+        android:id="@+id/analyticsFragment"
+        android:name="com.example.caresync.AnalyticsFragment"
+        android:label="Analytics"/>
+
+    <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.caresync.ProfileFragment"
         android:label="Profile"/>
 
-    <!-- NEW settings destination -->
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.caresync.SettingsFragment"
